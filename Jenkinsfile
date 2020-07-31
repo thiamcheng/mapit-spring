@@ -3,6 +3,32 @@ pipeline {
       label 'maven'
     }
   stages {
+    
+      stage ('Artifactory configuration') {
+          steps {
+                rtServer (
+                    id: "ARTIFACTORY_SERVER",
+                    url: "http://161.202.190.34:8082/artifactory/",
+                    credentialsId: "jfrog-credentials"
+                )
+
+                rtMavenDeployer (
+                    id: "MAVEN_DEPLOYER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    releaseRepo: "libs-release-local",
+                    snapshotRepo: "libs-snapshot-local"
+                )
+
+                rtMavenResolver (
+                    id: "MAVEN_RESOLVER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    releaseRepo: "libs-release",
+                    snapshotRepo: "libs-snapshot"
+                )
+            }
+        } 
+    
+         
         stage('SonarQube Code Analysis') {
 
           steps {
@@ -17,11 +43,18 @@ pipeline {
           }
         }
 
-    stage('Build App') {
-      steps {
-        sh "mvn install"
-      }
-    }
+     stage ('Build App') {
+            steps {
+                rtMavenRun (
+                    tool: 'maven', // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                )
+            }
+        }
+    
     stage('Create Image Builder') {
       when {
         expression {
