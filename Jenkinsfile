@@ -1,7 +1,7 @@
 pipeline {
   agent {
       label 'maven'
-  }
+    }
   stages {
         stage('SonarQube Code Analysis') {
 
