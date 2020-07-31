@@ -28,6 +28,18 @@ pipeline {
             }
         } 
     
+       stage ('Maven Clean App') {
+            steps {
+                rtMavenRun (
+                    tool: 'maven', // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'clean',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                )
+            }
+        }
+      
          
         stage('SonarQube Code Analysis') {
 
@@ -47,18 +59,18 @@ pipeline {
           }
         }
 
-     stage ('Build App') {
+     stage ('Maven Install App') {
             steps {
                 rtMavenRun (
                     tool: 'maven', // Tool name from Jenkins configuration
                     pom: 'pom.xml',
-                    goals: 'clean install',
+                    goals: 'install',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
                 )
             }
         }
-    
+       
     stage('Create Image Builder') {
       when {
         expression {
