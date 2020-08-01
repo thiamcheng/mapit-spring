@@ -4,7 +4,7 @@ pipeline {
     }
 	
    environment {
-        DEPLOY_NS = ${env.DEPLOY_NS}
+        DEPLOY_NS = "mapit2"
         
     }
   stages {
@@ -13,7 +13,7 @@ pipeline {
           steps {
                 rtServer (
                     id: "ARTIFACTORY_SERVER",
-                    url: ${env.ARTIFACTORY_SERVER_ID},
+                    url: "${env.ARTIFACTORY_SERVER_ID}",
                     credentialsId: "jfrog-credentials"
                 )
 
