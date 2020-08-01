@@ -4,16 +4,30 @@ pipeline {
     }
 	
    environment {
-        DEPLOY_NS = "mapit2"
+	   DEPLOY_NS = "${env.DEPLOY_NS}"
         
     }
   stages {
     
+      stage ('Echoing valuesp') {
+            steps {
+		    
+		    openshift.withCluster() {
+		          echo "DEPLOY_NS" + "${env.DEPLOY_NS}"
+			  echo "Selector Project result" + openshift.selector('project', "${DEPLOY_NS}").exists()
+			  echo "Selector ns result" + openshift.selector('ns', "${DEPLOY_NS}").exists()
+			  echo "Selector all result" + openshift.selector('all', "${DEPLOY_NS}").exists()
+
+		    }
+                )
+            }
+        }
+	  
     stage('Deleting project if any ..') {
       when {
              expression {
                  openshift.withCluster() {
-			 return openshift.selector('bc', "${DEPLOY_NS}").exists()
+			 return openshift.selector('project', "${DEPLOY_NS}").exists()
 		  }	
 	     }
         } 
