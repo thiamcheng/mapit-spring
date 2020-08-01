@@ -2,13 +2,18 @@ pipeline {
   agent {
       label 'maven'
     }
+	
+   environment {
+        DEPLOY_NS = ${env.DEPLOY_NS}
+        
+    }
   stages {
     
       stage ('Artifactory configuration') {
           steps {
                 rtServer (
                     id: "ARTIFACTORY_SERVER",
-                    url: "http://161.202.190.34:8082/artifactory/",
+                    url: ${env.ARTIFACTORY_SERVER_ID},
                     credentialsId: "jfrog-credentials"
                 )
 
@@ -75,7 +80,7 @@ pipeline {
       when {
         expression {
           openshift.withCluster() {
-             openshift.withProject('mapit'){
+             openshift.withProject(${DEPLOY_NS}){
             return !openshift.selector("bc", "mapit").exists();
           }
         }
@@ -84,7 +89,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
             openshift.newBuild("--name=mapit", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
           }
           }}
@@ -94,7 +99,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
             openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
           }
           }}
@@ -104,7 +109,7 @@ pipeline {
       steps {
         script {
             openshift.withCluster() {
-            openshift.withProject('mapit') { 
+            openshift.withProject(${DEPLOY_NS}) { 
               openshift.tag("mapit:latest", "mapit:dev")
           }
             }}
@@ -114,7 +119,7 @@ pipeline {
       when {
         expression {
             openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
           return !openshift.selector('dc', 'mapit-dev').exists()
           }
             }}
@@ -122,7 +127,7 @@ pipeline {
       steps {
         script {
             openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
             openshift.newApp("mapit:latest", "--name=mapit-dev").narrow('svc').expose()
           }
             }}
@@ -132,7 +137,7 @@ pipeline {
       steps {
         script {
             openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
             openshift.tag("mapit:dev", "mapit:stage")
           }
         }
@@ -142,7 +147,7 @@ pipeline {
       when {
         expression {
             openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
               return !openshift.selector('dc', 'mapit-stage').exists()
           }
             }}
@@ -150,7 +155,7 @@ pipeline {
       steps {
         script {
             openshift.withCluster() {
-            openshift.withProject('mapit') {
+            openshift.withProject(${DEPLOY_NS}) {
           openshift.newApp("mapit:stage", "--name=mapit-stage").narrow('svc').expose()
           }
             }}
