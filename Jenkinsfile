@@ -10,14 +10,26 @@ pipeline {
   stages {
     
     stage('Deleting project if any ..') {
+      when {
+             expression {
+                 openshift.withCluster() {
+			 return !openshift.selector('bc', "${DEPLOY_NS}").exists()
+		  }	
+	     }
+        } 
       steps {
         script {
             openshift.withCluster() {
-               openshift.raw("delete project ${DEPLOY_NS}") 
-            }
-		}
-      }
+	       echo "Deleting the project"   
+	      openshift.raw("delete project ${DEPLOY_NS}") 
+              }
+	}
+      }	 
     }
+	    
+        
+	
+	  
       stage ('Artifactory configuration') {
           steps {
                 rtServer (
