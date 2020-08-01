@@ -8,7 +8,17 @@ pipeline {
 
   }
   stages {
+     stage('Update Jira#1 with GitBranch') {
 
+      steps {
+        script {
+          response = jiraAddComment site: 'MyJenkins', idOrKey: env.GIT_BRANCH,  comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build UL - ${BUILD_URL}"
+        }
+
+      }
+    }
+	  
+	  
     stage('Echoing valuesp') {
       steps {
         script {
