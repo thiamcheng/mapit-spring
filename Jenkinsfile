@@ -97,13 +97,25 @@ pipeline {
             }
         }
 		
-	stage('Creating project if any ..') {
+  stage('Creating project if any ..') {
       steps {
-        script {
-            openshift.withCluster() {
-		    openshift.newProject( "${DEPLOY_NS}" )	    
-              }
-		}
+            script {
+                    openshift.withCluster() {	 
+	
+			     try {
+				   openshift.withCredentials( 'Jenkins01-token' ) {
+            			   openshift.newProject( "${DEPLOY_NS}" )
+                                 // ...
+                             }
+                            } catch ( e ) {
+        			// The exception is a hudson.AbortException with details
+        				// about the failure.
+        			"Error encountered: ${e}"
+ 			   }
+
+			    
+                }
+	}
       }
     }	
        
