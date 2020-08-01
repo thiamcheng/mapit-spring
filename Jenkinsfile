@@ -9,6 +9,15 @@ pipeline {
     }
   stages {
     
+    stage('Deleting project if any ..') {
+      steps {
+        script {
+            openshift.withCluster() {
+               openshift.raw("delete project ${DEPLOY_NS}") 
+            }
+		}
+      }
+    }
       stage ('Artifactory configuration') {
           steps {
                 rtServer (
@@ -75,6 +84,16 @@ pipeline {
                 )
             }
         }
+		
+	stage('Creating project if any ..') {
+      steps {
+        script {
+            openshift.withCluster() {
+               openshift.raw("new-project ${DEPLOY_NS}") 
+            }
+		}
+      }
+    }	
        
     stage('Create Image Builder') {
       when {
