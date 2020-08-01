@@ -95,12 +95,13 @@ pipeline {
             try {
               openshift.withCredentials('Jenkins01-token') {
                 openshift.newProject("${DEPLOY_NS}")
+                echo "sudah masuk bosss sini "
                 // ...
               }
             } catch(e) {
               // The exception is a hudson.AbortException with details
               // about the failure.
-              "Error encountered: ${e}"
+               echo "Error encountered: ${e}"
             }
 
           }
