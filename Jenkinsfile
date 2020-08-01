@@ -12,6 +12,7 @@ pipeline {
 
       steps {
         script {
+		echo "This is branch" +  "${env.GIT_BRANCH}"
 		response = jiraAddComment site: 'MyJenkins', idOrKey: "${env.GIT_BRANCH}",  comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build UL - ${BUILD_URL}"
         }
 
