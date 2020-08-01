@@ -12,8 +12,21 @@ pipeline {
 
       steps {
         script {
-		echo "This is branch" +  "${env.GIT_BRANCH}"
-		response = jiraAddComment site: 'MyJenkins', idOrKey: "${env.GIT_BRANCH}",  comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build UL - ${BUILD_URL}"
+		echo "Env.GIT_BRANCH :" +  "${env.GIT_BRANCH}"
+		echo "GIT_BRANCH :" + "${GIT_BRANCH}"
+		
+		def issue = jiraGetIssue idOrKey: "${env.GIT_BRANCH}, site: 'MyJenkins'
+                
+		if (issue.code.toString() == '200') {
+                     response = jiraAddComment site: 'MyJenkins', idOrKey: "${env.GIT_BRANCH}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
+                } else {
+                       def issueInfo = [fields: [ project: [key: 'MYD'],
+                       summary: "Review build ${GIT_BRANCH}",
+                       description: 'Review changes for build ${GIT_BRANCH}',
+                       issuetype: [name: 'Task']]]
+                        response = jiraNewIssue issue: issueInfo, site: 'MyJenkins'
+               }
+
         }
 
       }
