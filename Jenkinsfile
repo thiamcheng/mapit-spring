@@ -13,10 +13,10 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            echo "DEPLOY_NS :[" + "${env.DEPLOY_NS}"  + "]"
-            echo "Selector Project result :[" + openshift.selector('project', "${DEPLOY_NS}").exists() +"]"
-            echo "Selector ns result :[" + openshift.selector('ns', "${DEPLOY_NS}").exists() +"]"
-        
+            echo "DEPLOY_NS :[" + "${env.DEPLOY_NS}" + "]"
+            echo "Selector Project result :[" + openshift.selector('project', "${DEPLOY_NS}").exists() + "]"
+            echo "Selector ns result :[" + openshift.selector('ns', "${DEPLOY_NS}").exists() + "]"
+
           }
         }
       }
@@ -93,15 +93,15 @@ pipeline {
           openshift.withCluster() {
 
             try {
-             // openshift.withCredentials('Jenkins01-token') {
-                openshift.newProject("${DEPLOY_NS}")
-                echo "sudah masuk bosss sini "
-                // ...
+              // openshift.withCredentials('Jenkins01-token') {
+              openshift.newProject("${DEPLOY_NS}")
+              echo "sudah masuk bosss sini "
+              // ...
               // }
             } catch(e) {
               // The exception is a hudson.AbortException with details
               // about the failure.
-               echo "Error encountered: ${e}"
+              echo "Error encountered: ${e}"
             }
 
           }
@@ -202,5 +202,14 @@ pipeline {
         }
       }
     }
-  }
-}
+    stage('Update Jira') {
+
+      steps {
+        script {
+          response = jiraAddComment site: 'MyJenkins', idOrKey: 'MYD-7',  comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build UL - ${BUILD_URL}"
+        }
+
+      }
+    }
+	
+}	
