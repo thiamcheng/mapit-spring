@@ -89,8 +89,8 @@ pipeline {
       steps {
         script {
             openshift.withCluster() {
-               openshift.raw("new-project ${DEPLOY_NS}") 
-            }
+		    openshift.newProject( "${DEPLOY_NS}" )	    
+              }
 		}
       }
     }	
