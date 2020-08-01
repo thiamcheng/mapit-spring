@@ -13,7 +13,7 @@ pipeline {
       when {
              expression {
                  openshift.withCluster() {
-			 return !openshift.selector('bc', "${DEPLOY_NS}").exists()
+			 return openshift.selector('bc', "${DEPLOY_NS}").exists()
 		  }	
 	     }
         } 
