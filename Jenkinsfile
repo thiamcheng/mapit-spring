@@ -19,7 +19,7 @@ pipeline {
 			  echo "Selector all result" + openshift.selector('all', "${DEPLOY_NS}").exists()
 
 		    }
-                )
+	        }
             }
         }
 	  
