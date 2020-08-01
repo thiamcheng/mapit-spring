@@ -13,10 +13,10 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            echo "DEPLOY_NS" + "${env.DEPLOY_NS}"
-            echo "Selector Project result" + openshift.selector('project', "${DEPLOY_NS}").exists()
-            echo "Selector ns result" + openshift.selector('ns', "${DEPLOY_NS}").exists()
-            echo "Selector all result" + openshift.selector('all', "${DEPLOY_NS}").exists()
+            echo "DEPLOY_NS :[" + "${env.DEPLOY_NS}"  + "]"
+            echo "Selector Project result :[" + openshift.selector('project', "${DEPLOY_NS}").exists() +"]"
+            echo "Selector ns result :[" + openshift.selector('ns', "${DEPLOY_NS}").exists() +"]"
+        
           }
         }
       }
