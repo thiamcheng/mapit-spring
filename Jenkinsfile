@@ -16,9 +16,13 @@ pipeline {
        }
       steps {
         script {
-		  echo "GIT_BRANCH :" +  "${GIT_BRANCH#*/}"
+		  MY_ORI_GIT = ${GIT_BRANCH}
+		// origin/
+		  MY_NEW_GIT = MY_ORI_GIT.substring(7)
 		  
-	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${GIT_BRANCH#*/}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
+		  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
+		  echo "MY_NEW_GIT :" +  MY_NEW_GIT
+	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
         
         }
 
