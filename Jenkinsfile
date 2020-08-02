@@ -5,23 +5,26 @@ pipeline {
 
   environment {
     DEPLOY_NS = "${env.DEPLOY_NS}"
+    GIT_FALSE_FULL_NAME =  "${GIT_BRANCH,fullName=false}"
+    MY_ORI_GIT = "${GIT_BRANCH}"
+    // MY_NEW_GIT = MY_ORI_GIT.substring(7)
+    MY_NEW_GIT = 'MYD-7'		
 
   }
   stages {
-     stage('Update Jira#0 with GitBranch') {
-       when {
-          not {
-            branch 'master'
-          }
-       }
+      stage('Update Jira#0 with GitBranch') {
+     //  when {
+     //     not {
+     //       branch 'master'
+     //     }
+     //  }
       steps {
         script {
-		  MY_ORI_GIT = ${GIT_BRANCH}
-		// origin/
-		  MY_NEW_GIT = MY_ORI_GIT.substring(7)
 		  
 		  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
 		echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
+		echo "GIT_FALSE :" + "${GIT_FALSE_FULL_NAME}"
+		GIT_FALSE_FULL_NAME
 	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
         
         }
