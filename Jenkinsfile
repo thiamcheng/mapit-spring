@@ -21,8 +21,8 @@ pipeline {
       steps {
         script {
 		  
-		  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
-		echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
+		 //  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
+		// echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
 		// echo "GIT_FALSE : ${GIT_BRANCH,fullName=false} "
 		
 	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
@@ -36,11 +36,11 @@ pipeline {
 
       steps {
         script {
-		 MY_ORI_GIT = ${GIT_BRANCH}
+		 // MY_ORI_GIT = ${GIT_BRANCH}
 		// origin/
-		  MY_NEW_GIT = MY_ORI_GIT.substring(7)
-		echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
-	        echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
+		 // MY_NEW_GIT = MY_ORI_GIT.substring(7)
+		// echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
+	        // echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
 		
 		def issue = jiraGetIssue idOrKey: "${MY_NEW_GIT}", site: 'MyJenkins'
                 
