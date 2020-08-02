@@ -45,7 +45,7 @@ pipeline {
                      response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
                 } else {
                        def issueInfo = [fields: [ project: [key: 'MYD'],
-                       summary: "Review build "${MY_NEW_GIT}"",
+                       summary: "Review build ${MY_NEW_GIT} ",
                        description: 'Review changes for build ${MY_NEW_GIT}',
                        issuetype: [name: 'Task']]]
                         response = jiraNewIssue issue: issueInfo, site: 'MyJenkins'
