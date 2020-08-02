@@ -23,7 +23,7 @@ pipeline {
 		  
 		  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
 		echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
-		echo "GIT_FALSE : ${GIT_BRANCH,fullName=false} "
+		// echo "GIT_FALSE : ${GIT_BRANCH,fullName=false} "
 		
 	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
         
