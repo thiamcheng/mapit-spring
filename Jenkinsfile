@@ -8,6 +8,23 @@ pipeline {
 
   }
   stages {
+     stage('Update Jira#0 with GitBranch') {
+       when {
+          not {
+            branch 'master'
+          }
+       }
+      steps {
+        script {
+		  echo "Env.GIT_BRANCH :" +  "${env.GIT_BRANCH}"
+		  echo "GIT_BRANCH :" + "${GIT_BRANCH}"
+	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${env.GIT_BRANCH}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
+        
+        }
+
+      }
+    }
+	  
      stage('Update Jira#1 with GitBranch') {
 
       steps {
