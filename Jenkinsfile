@@ -21,7 +21,7 @@ pipeline {
 		  MY_NEW_GIT = MY_ORI_GIT.substring(7)
 		  
 		  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
-		  echo "MY_NEW_GIT :" +  MY_NEW_GIT
+		echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
 	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
         
         }
@@ -33,17 +33,20 @@ pipeline {
 
       steps {
         script {
-		echo "GIT_BRANCH :" +  "${GIT_BRANCH#*/}"
+		 MY_ORI_GIT = ${GIT_BRANCH}
+		// origin/
+		  MY_NEW_GIT = MY_ORI_GIT.substring(7)
+		echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
+	        echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
 		
-		
-		def issue = jiraGetIssue idOrKey: "${GIT_BRANCH#*/}", site: 'MyJenkins'
+		def issue = jiraGetIssue idOrKey: "${MY_NEW_GIT}", site: 'MyJenkins'
                 
 		if (issue.code.toString() == '200') {
-                     response = jiraAddComment site: 'MyJenkins', idOrKey: "${GIT_BRANCH#*/}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
+                     response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
                 } else {
                        def issueInfo = [fields: [ project: [key: 'MYD'],
-                       summary: "Review build ${GIT_BRANCH#*/}",
-                       description: 'Review changes for build ${GIT_BRANCH#*/}',
+                       summary: "Review build "${MY_NEW_GIT}"",
+                       description: 'Review changes for build ${MY_NEW_GIT}',
                        issuetype: [name: 'Task']]]
                         response = jiraNewIssue issue: issueInfo, site: 'MyJenkins'
                }
