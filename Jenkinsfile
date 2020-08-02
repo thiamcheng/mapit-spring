@@ -5,8 +5,8 @@ pipeline {
 
   environment {
     DEPLOY_NS = "${env.DEPLOY_NS}"
-    GIT_FALSE_FULL_NAME =  "${GIT_BRANCH,fullName=false}"
-    MY_ORI_GIT = "${GIT_BRANCH}"
+    GIT_FALSE_FULL_NAME =  "${env.GIT_BRANCH,fullName=false}"
+    MY_ORI_GIT = "${env.GIT_BRANCH}"
     // MY_NEW_GIT = MY_ORI_GIT.substring(7)
     MY_NEW_GIT = 'MYD-7'		
 
