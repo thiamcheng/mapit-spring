@@ -12,6 +12,8 @@ pipeline {
 
   }
   stages {
+	  
+     	  
       stage('Update Jira#0 with GitBranch') {
      //  when {
      //     not {
@@ -112,6 +114,13 @@ pipeline {
       }
     }
 
+   stage('Nexus IQ ') {
+      steps {
+              echo 'Nexus IQ ..'
+	      nexusPolicyEvaluation advancedProperties: '', failBuildOnNetworkError: false, iqApplication: selectedApplication('sandbox-application'), iqStage: 'build', jobCredentialsId: ''
+    }
+	  
+	  
     stage('SonarQube Code Analysis') {
 
       steps {
