@@ -284,7 +284,7 @@ pipeline {
 				      def response = httpRequest url: 'http://' + hostName.actions[0].out, httpMode: 'GET'
                                        // println("Status: "+response.status)
                                        // println("Content: "+response.content)
-				      if (response.status = 200) {
+				      if ( response.status == 200 ) {
 				          println("Unit Test: SUCCESS")
 				      } else {
 				         println("Unit Test: FAILED" + response.status)
