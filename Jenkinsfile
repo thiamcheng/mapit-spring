@@ -15,7 +15,7 @@ pipeline {
 	  
      stage ('Get route and do http post') {
 	     steps {
-		     scripts {
+		     script {
 			      openshift.withCluster() {
 				      def hostName = openshift.raw('get route -o jsonpath=\'{.items[0].spec.host}\' -n ${DEPLOY_NS}') 
 				       println("My hostname" + hostName)
