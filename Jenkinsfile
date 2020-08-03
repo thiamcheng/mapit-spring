@@ -19,7 +19,8 @@ pipeline {
 			      openshift.withCluster() {
 				      def hostName = openshift.raw('get route -o jsonpath=\'{.items[0].spec.host}\' -n ${DEPLOY_NS}') 
 				       println("My hostname" + hostName)
-				      def response = httpRequest url: hostName, httpMode: 'GET'
+				       println("Actual hostname" + hostName.actions[0].out)
+				      def response = httpRequest url: hostName.actions[0].out, httpMode: 'GET'
                                        println("Status: "+response.status)
                                        println("Content: "+response.content)
 				      
