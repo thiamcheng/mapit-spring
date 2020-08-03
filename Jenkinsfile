@@ -118,7 +118,9 @@ pipeline {
       steps {
               echo 'Nexus IQ ..'
 	      nexusPolicyEvaluation advancedProperties: '', failBuildOnNetworkError: false, iqApplication: selectedApplication('sandbox-application'), iqStage: 'build', jobCredentialsId: ''
-    }
+       }
+   }
+	   
 	  
 	  
     stage('SonarQube Code Analysis') {
