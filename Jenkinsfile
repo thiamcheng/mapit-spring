@@ -20,7 +20,7 @@ pipeline {
 				      def hostName = openshift.raw('get route -o jsonpath=\'{.items[0].spec.host}\' -n ${DEPLOY_NS}') 
 				       println("My hostname" + hostName)
 				       println("Actual hostname" + hostName.actions[0].out)
-				      def response = httpRequest url: hostName.actions[0].out, httpMode: 'GET'
+				      def response = httpRequest url: 'http://' + hostName.actions[0].out, httpMode: 'GET'
                                        println("Status: "+response.status)
                                        println("Content: "+response.content)
 				      
