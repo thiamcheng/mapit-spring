@@ -13,7 +13,25 @@ pipeline {
   }
   stages {
 	  
-     	  
+     stage ('Get route and do http post') {
+	     steps {
+		     scripts {
+			      openshift.withCluster() {
+				      def hostName = openshift.raw('get route -o jsonpath=\'{.items[0].spec.host}\' -n ${DEPLOY_NS}') 
+				       println("My hostname" + hostName)
+				      def response = httpRequest url: hostName, httpMode: 'GET'
+                                       println("Status: "+response.status)
+                                       println("Content: "+response.content)
+				      
+			      }	      
+			     
+			     
+		     }	     
+		     
+	     }
+		  
+      }
+		  
       stage('Update Jira#0 with GitBranch') {
      //  when {
      //     not {
