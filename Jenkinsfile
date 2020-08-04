@@ -4,7 +4,9 @@ pipeline {
   }
 
   environment {
-    DEPLOY_NS = "${env.DEPLOY_NS}"
+    DEPLOY_NS_SIT = "${env.DEPLOY_NS_SIT}"
+    DEPLOY_NS_UAT = "${env.DEPLOY_NS_UAT}"
+	  
     // GIT_FALSE_FULL_NAME =  "${env.GIT_BRANCH,fullName=false}"
     MY_ORI_GIT = "${env.GIT_BRANCH}"
     // MY_NEW_GIT = MY_ORI_GIT.substring(7)
@@ -62,37 +64,56 @@ pipeline {
     }
 	  
 	  
-    stage('Echoing valuesp') {
-      steps {
-        script {
-          openshift.withCluster() {
-            echo "DEPLOY_NS :[" + "${env.DEPLOY_NS}" + "]"
-            echo "Selector Project result :[" + openshift.selector('project', "${DEPLOY_NS}").exists() + "]"
-            echo "Selector ns result :[" + openshift.selector('ns', "${DEPLOY_NS}").exists() + "]"
+    // stage('Echoing valuesp') {
+    //  steps {
+    //    script {
+    //      openshift.withCluster() {
+    //        echo "DEPLOY_NS :[" + "${env.DEPLOY_NS}" + "]"
+    //        echo "Selector Project result :[" + openshift.selector('project', "${DEPLOY_NS}").exists() + "]"
+    //        echo "Selector ns result :[" + openshift.selector('ns', "${DEPLOY_NS}").exists() + "]"
 
-          }
-        }
-      }
-    }
+     //     }
+     //   }
+     // }
+    // }
 
-    stage('Deleting project if any ..') {
+    stage('Deleting SIT project if any ..') {
       when {
         expression {
           openshift.withCluster() {
-            return openshift.selector('project', "${DEPLOY_NS}").exists()
+            return openshift.selector('project', "${DEPLOY_NS_SIT}").exists()
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            echo "Deleting the project"
-            openshift.raw("delete project ${DEPLOY_NS}")
+            echo "Deleting SIT project"
+            openshift.raw("delete project ${DEPLOY_NS_SIT}")
           }
         }
       }
     }
 
+    stage('Deleting UAT project if any ..') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return openshift.selector('project', "${DEPLOY_NS_UAT}").exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            echo "Deleting UAT project"
+            openshift.raw("delete project ${DEPLOY_NS_UAT}")
+          }
+        }
+      }
+    }
+
+	  
     stage('Artifactory configuration') {
       steps {
         rtServer(
@@ -149,33 +170,48 @@ pipeline {
       }
     }
 
-    stage('Creating project if any ..') {
+    stage('Creating SIT and UAT project') {
       steps {
         script {
           openshift.withCluster() {
 
             try {
               // openshift.withCredentials('Jenkins01-token') {
-              openshift.newProject("${DEPLOY_NS}")
-              echo "sudah masuk bosss sini "
+              echo "Creating SIT Project.. "
+	      openshift.newProject("${DEPLOY_NS_SIT}")
+              
               // ...
               // }
             } catch(e) {
               // The exception is a hudson.AbortException with details
               // about the failure.
-              echo "Error encountered: ${e}"
+              echo "Error encountered in SIT : ${e}"
             }
 
+	    try {
+              // openshift.withCredentials('Jenkins01-token') {
+              echo "Creating UAT Project.. "
+	      openshift.newProject("${DEPLOY_NS_UAT}")
+              
+              // ...
+              // }
+            } catch(e2) {
+              // The exception is a hudson.AbortException with details
+              // about the failure.
+              echo "Error encountered in UAT: ${e2}"
+            }
+		  
+		  
           }
         }
       }
     }
 
-    stage('Create Image Builder') {
+    stage('Create SIT Image Builder') {
       when {
         expression {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_SIT}") {
               return ! openshift.selector("bc", "mapit").exists();
             }
           }
@@ -184,40 +220,73 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_SIT}") {
               openshift.newBuild("--name=mapit", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
             }
           }
         }
       }
     }
-    stage('Build Image') {
+	  
+    stage('Create UAT Image Builder') {
+      when {
+        expression {
+          openshift.withCluster() {
+            openshift.withProject("${DEPLOY_NS_UAT}") {
+              return ! openshift.selector("bc", "mapit").exists();
+            }
+          }
+        }
+      }
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_UAT}") {
+              openshift.newBuild("--name=mapit", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
+            }
+          }
+        }
+      }
+    }
+    stage('Build SIT Image ') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject("${DEPLOY_NS_SIT}") {
               openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
             }
           }
         }
       }
     }
-    stage('Promote to DEV') {
+
+    stage('Build UAT Image ') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_UAT}") {
+              openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
+            }
+          }
+        }
+      }
+    }
+    stage('Promote to SIT') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject("${DEPLOY_NS_SIT}") {
               openshift.tag("mapit:latest", "mapit:dev")
             }
           }
         }
       }
     }
-    stage('Create DEV') {
+    stage('Create SIT deployment') {
       when {
         expression {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_SIT}") {
               return ! openshift.selector('dc', 'mapit-dev').exists()
             }
           }
@@ -226,29 +295,29 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_SIT}") {
               openshift.newApp("mapit:latest", "--name=mapit-dev").narrow('svc').expose()
             }
           }
         }
       }
     }
-    stage('Promote STAGE') {
+    stage('Promote to UAT') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_UAT}") {
               openshift.tag("mapit:dev", "mapit:stage")
             }
           }
         }
       }
     }
-    stage('Create STAGE') {
+    stage('Create UAT deployment') {
       when {
         expression {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_UAT}") {
               return ! openshift.selector('dc', 'mapit-stage').exists()
             }
           }
@@ -257,7 +326,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject("${DEPLOY_NS}") {
+            openshift.withProject("${DEPLOY_NS_UAT}") {
               openshift.newApp("mapit:stage", "--name=mapit-stage").narrow('svc').expose()
             }
           }
@@ -280,7 +349,7 @@ pipeline {
 			      openshift.withCluster() {
 				      println("Waiting for 20 sec for Pod to be ready")
 				      sleep(20) 
-				      def hostName = openshift.raw('get route -o jsonpath=\'{.items[0].spec.host}\' -n ${DEPLOY_NS}') 
+				      def hostName = openshift.raw('get route -o jsonpath=\'{.items[0].spec.host}\' -n ${DEPLOY_NS_SIT}') 
 				       // println("My hostname" + hostName)
 				       // println("Actual hostname" + hostName.actions[0].out)
 	                              
@@ -288,9 +357,9 @@ pipeline {
                                        // println("Status: "+response.status)
                                        // println("Content: "+response.content)
 				      if ( response.status == 200 ) {
-				          println("Unit Test: SUCCESS")
+				          println("SIT Unit Test: SUCCESS")
 				      } else {
-				         println("Unit Test: FAILED" + response.status)
+				         println("SIT Unit Test: FAILED" + response.status)
 				      }
 				      
 			      }	      
