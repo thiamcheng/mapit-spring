@@ -373,12 +373,7 @@ pipeline {
     stage('Twistlock ') {
       steps {
         sh '''
-           curl -k -ssl -u "bob_the_builder:go1utama"
-            https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud/api/v1/util/twistcli
-           -o twistcli && chmod +x ./twistcli && ./twistcli images scan --ci 
-           --containerized --user bob_the_builder --password go1utama --address
-           https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud
-           --details  fox-ose-build-scan-demo-8
+              curl -k -ssl -u "bob_the_builder:go1utama" https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud/api/v1/util/twistcli -o twistcli && chmod +x ./twistcli && ./twistcli images scan --ci --containerized --user bob_the_builder --password go1utama --address https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud --details  fox-ose-build-scan-demo-8 
 	   '''
       }
     }  
