@@ -40,7 +40,7 @@ pipeline {
     stage('Artifactory configuration') {
       steps {
         rtServer(
-        id: "ARTIFACTORY_SERVER", url: 'http://119.81.222.69:8082/artifactory', credentialsId: "jfrog-credentials")
+        id: "ARTIFACTORY_SERVER", url: 'http://161.202.190.34:8082/artifactory/', credentialsId: "jfrog-credentials")
 
         rtMavenDeployer(
         id: "MAVEN_DEPLOYER", serverId: "ARTIFACTORY_SERVER", releaseRepo: "libs-release-local", snapshotRepo: "libs-snapshot-local")
