@@ -308,7 +308,7 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject("${DEPLOY_NS_UAT}") {
-              openshift.tag("mapit:dev", "mapit:stage")
+              openshift.tag("mapit:latest", "mapit:stage")
             }
           }
         }
