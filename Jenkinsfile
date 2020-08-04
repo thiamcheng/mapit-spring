@@ -3,7 +3,6 @@ pipeline {
     label 'maven'
   }
 	
-
   environment {
     DEPLOY_NS_SIT = "${env.DEPLOY_NS_SIT}"
     DEPLOY_NS_UAT = "${env.DEPLOY_NS_UAT}"
