@@ -10,7 +10,8 @@ pipeline {
     // GIT_FALSE_FULL_NAME =  "${env.GIT_BRANCH,fullName=false}"
     MY_ORI_GIT = "${env.GIT_BRANCH}"
     // MY_NEW_GIT = MY_ORI_GIT.substring(7)
-    MY_NEW_GIT = 'MYD-7'		
+    MY_NEW_GIT = 'MYD-42'
+    TWISTLOCKPW = "${env.TWISTLOCK_PASS}"	  
 
   }
   stages {
@@ -25,7 +26,7 @@ pipeline {
       steps {
         script {
 		  
-		 //  echo "GIT_BRANCH :" +  "${GIT_BRANCH}"
+		 echo "GIT_BRANCH :" +  "${env.GIT_BRANCH}"
 		// echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
 		// echo "GIT_FALSE : ${GIT_BRANCH,fullName=false} "
 		
@@ -373,7 +374,7 @@ pipeline {
     stage('Twistlock ') {
       steps {
         sh '''
-              curl -k -ssl -u "bob_the_builder:go1utama" https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud/api/v1/util/twistcli -o twistcli && chmod +x ./twistcli && ./twistcli images scan --ci --containerized --user bob_the_builder --password go1utama --address https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud --details  ${DEPLOY_NS_SIT} 
+              curl -k -ssl -u "bob_the_builder:${TWISTLOCKPW}" https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud/api/v1/util/twistcli -o twistcli && chmod +x ./twistcli && ./twistcli images scan --ci --containerized --user bob_the_builder --password ${TWISTLOCKPW} --address https://twistlock-1440-2900.dc-ig-lib-ga-1589529604-f72ef11f3ab089a8c677044eb28292cd-0000.au-syd.containers.appdomain.cloud --details  ${DEPLOY_NS_SIT} 
 	   '''
       }
     }  
