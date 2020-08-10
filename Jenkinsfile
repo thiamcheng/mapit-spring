@@ -29,6 +29,9 @@ pipeline {
 		 echo "GIT_BRANCH :" +  "${env.GIT_BRANCH}"
 		// echo "MY_NEW_GIT :" +  "${MY_NEW_GIT}"
 		// echo "GIT_FALSE : ${GIT_BRANCH,fullName=false} "
+		env.GIT_COMMIT_MSG_TITLE = sh (script: 'git log -1 --pretty=%s ${GIT_COMMIT}', returnStdout: true).trim()
+	     echo "GIT_COMMIT_MSG_TITLE : " + "${env.GIT_COMMIT_MSG_TITLE}"
+		 MY_NEW_GIT = "${env.GIT_COMMIT_MSG_TITLE}"
 		
 	           response = jiraAddComment site: 'MyJenkins', idOrKey: "${MY_NEW_GIT}", comment: "Build result: Job - ${JOB_NAME} Build Number = ${BUILD_NUMBER} Build URL - ${BUILD_URL}"
         
