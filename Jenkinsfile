@@ -2,7 +2,7 @@ pipeline {
   agent {
     label 'maven'
   }
-  // this is to trigger commit and merge to branch - this is for EPF demo	
+  // this is to trigger commit and merge to branch - 
   environment {
     DEPLOY_NS_SIT = "${env.DEPLOY_NS_SIT}"
     DEPLOY_NS_UAT = "${env.DEPLOY_NS_UAT}"
@@ -10,7 +10,7 @@ pipeline {
     // GIT_FALSE_FULL_NAME =  "${env.GIT_BRANCH,fullName=false}"
     MY_ORI_GIT = "${env.GIT_BRANCH}"
     // MY_NEW_GIT = MY_ORI_GIT.substring(7)
-    MY_NEW_GIT = 'MYD-43'
+    MY_NEW_GIT = 'CD-43'
     TWISTLOCKPW = "${env.TWISTLOCK_PASS}"	  
 
   }
